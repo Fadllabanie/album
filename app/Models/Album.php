@@ -11,6 +11,7 @@ class Album extends Model
 
 
     protected $fillable = ['name'];
+    public $with = ['medias'];
 
     public function medias()
     {

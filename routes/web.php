@@ -18,4 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('albums', AlbumController::class);
+Route::resource('albums', AlbumController::class)->except('destroy');
+Route::post('delete', [AlbumController::class,'destroy'])->name('albums.delete');

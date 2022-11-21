@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Album;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreAlbumRequest;
 use App\Http\Requests\UpdateAlbumRequest;
 
@@ -61,7 +62,8 @@ class AlbumController extends Controller
      */
     public function edit(Album $album)
     {
-        return view('albums.create', compact('album'));
+
+        return view('albums.edit', compact('album'));
     }
 
     /**
@@ -73,7 +75,8 @@ class AlbumController extends Controller
      */
     public function update(UpdateAlbumRequest $request, Album $album)
     {
-        //
+        $request->update($album);
+        return redirect()->route('albums.index');
     }
 
     /**
@@ -82,9 +85,21 @@ class AlbumController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Album $album)
+    public function destroy(Request $request)
     {
-        $album->delete();
+
+        $album = Album::find($request->album);
+
+        if ($request->type == 'delete') {
+            $album->delete();
+            $album->medias()->delete();
+        } else {
+            DB::table('album_media')->where('album_id', $album->id)->update([
+                'album_id' => $request->album_id
+            ]);
+            $album->delete();
+        }
+
         return redirect()->back();
     }
 }
